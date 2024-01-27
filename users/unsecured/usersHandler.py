@@ -42,8 +42,8 @@ def delete_user(username):
 
 def change_user_password(username, new_password):
     new_user_salt = passwordHandler.generate_salt()
-    hashed_new_password = passwordHandler.hash_password(new_password)
-    sql_query = f"update users_users set password={hashed_new_password}, salt={new_user_salt} where username={username}"
+    hashed_new_password = passwordHandler.hash_password(new_password,new_user_salt)
+    sql_query = f"update users_users set password=\"{hashed_new_password}\", salt=\"{new_user_salt}\" where username=\"{username}\""
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
@@ -54,20 +54,20 @@ def forgot_password(username):
     pass
 
 def get_user_salt(username):
-    sql_query = f"select salt from users_users where username={username}"
+    sql_query = f"select salt from users_users where username=\"{username}\""
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
         row = cursor.fetchone()
-        return row
+        return row[0]
     
 def get_user_password(username):
-    sql_query = f"select password from users_users where username={username}"
+    sql_query = f"select password from users_users where username=\"{username}\""
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
         row = cursor.fetchone()
-        return row
+        return row[0]
     
 def password_is_currect(username,password):
     user_salt = get_user_salt(username)
@@ -78,4 +78,7 @@ def password_is_currect(username,password):
 class UserIsTakenExeption(Exception):
     pass
 class EmailIsTakenExeption(Exception):
+    pass
+
+class WrongCradentialsExeption(Exception):
     pass

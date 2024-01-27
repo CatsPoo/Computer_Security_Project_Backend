@@ -30,9 +30,17 @@ def register(request: HttpRequest):
     else:
         return HttpResponseBadRequest()
 
-
+@csrf_exempt
 def change_password(request: HttpRequest):
-    pass
+    if(request.method=='PUT'):
+        try:
+            data = json.loads(request.body)
+            webActionHandler.change_password(data['username'],data['old_password'],data['new_password'])
+            return HttpRequest({})
+        except WeakPasswordExeption:
+            return HttpResponseBadRequest('Wrong Cradentials')
+    else:
+        raise HttpResponseBadRequest('Wrong request method')
 
 def reset_password(request: HttpRequest):
     pass

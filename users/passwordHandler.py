@@ -22,7 +22,7 @@ def vaildate_password(password):
     return None
 
 def is_passwords_mached(clear_text_password,hashed_password,salt):
-    return (hash_password(clear_text_password,salt) == hash_password)
+    return (hash_password(clear_text_password,salt) == hashed_password)
 
 class WeakPasswordExeption(Exception):
     pass
