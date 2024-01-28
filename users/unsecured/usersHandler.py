@@ -1,6 +1,5 @@
 from django.db import connection
 import users.passwordHandler as passwordHandler
-
 def add_user(username,password,email):
     
     new_user_salt = passwordHandler.generate_salt()
@@ -74,11 +73,3 @@ def password_is_currect(username,password):
     user_real_password = get_user_password(username)
 
     return (passwordHandler.hash_password(password,user_salt) == user_real_password)
-    
-class UserIsTakenExeption(Exception):
-    pass
-class EmailIsTakenExeption(Exception):
-    pass
-
-class WrongCradentialsExeption(Exception):
-    pass

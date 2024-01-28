@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 import json
 from users.passwordHandler import WeakPasswordExeption
-from users.usersExeptions import UserIsTakenExeption,EmailIsTakenExeption
+from users.secured.usersHandler import UserIsTakenExeption,EmailIsTakenExeption
 import users.unsecured.webActionHandler as webActionHandler
 from django.views.decorators.csrf import csrf_exempt
 
