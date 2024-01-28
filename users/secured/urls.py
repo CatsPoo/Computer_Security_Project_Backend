@@ -1,5 +1,5 @@
 from django.urls import path, include
-from users.secured.views import views
+from users.secured import views
 urlpatterns = [
     path('test',views.test),
     path('register',views.register),

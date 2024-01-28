@@ -67,9 +67,3 @@ def get_user_password(username):
         cursor.execute(sql_query)
         row = cursor.fetchone()
         return row[0]
-    
-def password_is_currect(username,password):
-    user_salt = get_user_salt(username)
-    user_real_password = get_user_password(username)
-
-    return (passwordHandler.hash_password(password,user_salt) == user_real_password)
