@@ -67,3 +67,60 @@ def get_user_password(username):
         cursor.execute(sql_query)
         row = cursor.fetchone()
         return row[0]
+    
+def get_failed_login_tries(username):
+    sql_query = f"select failed_login_tries from users_users where username=\"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchone()
+        return row[0]
+    
+def update_failed_login_tries(username,new_value):
+    sql_query = f"update users_users set failed_login_tries=\"{new_value}\"\" where username=\"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchone()
+        return row
+    
+
+def get_is_locked_value(username):
+    sql_query = f"select is_locked from users_users where username=\"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchone()
+        return row[0]
+    
+def update_is_lock_value(username,new_value):
+    sql_query = f"update users_users set is_locked=\"{new_value}\"\" where username=\"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchone()
+        return row
+
+def get_user_email(username):
+    sql_query = f"select email from users_users where username=\"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchone()
+        return row[0]
+    
+def get_user_reset_password_key(username):
+    sql_query = f"select reset_password_key from users_users where username=\"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchone()
+        return row[0]
+    
+def set_user_reset_password_key(username,key):
+    sql_query = f"update users_users set reset_password_key=\"{key}\" where username=\"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchone()
+        return row

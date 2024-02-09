@@ -6,3 +6,6 @@ class EmailIsTakenExeption(Exception):
 
 class WrongCradentialsExeption(Exception):
     pass
+
+class LockedUserExeption(Exception):
+    pass

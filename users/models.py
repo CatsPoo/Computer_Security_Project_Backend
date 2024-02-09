@@ -8,6 +8,10 @@ class Users(models.Model):
     email = models.CharField(max_length = 50,unique=True)
     is_locked = models.BooleanField(default=False)
     failed_login_tries = models.SmallIntegerField(default=0)
+    reset_password_key = models.CharField(max_length=100,default='')
 
     def __str__(self) -> str:
         return self.name
+    
+class Passwords_History(models.Model):
+    pass
