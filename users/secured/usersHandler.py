@@ -1,39 +1,44 @@
 from django.db import connection
 import users.passwordHandler as passwordHandler
-from users.models import Users
+from users.models import Users,Passwords_History
+from django.db import transaction
 
 def add_user(username,password,email):
     salt = passwordHandler.generate_salt()
     hased_password = passwordHandler.hash_password(password,salt)
 
-    user = Users(username = username, password=hased_password,email= email)
-    user.save()
+    with transaction.atomic():
+        user = Users.objects.create(username = username, password=hased_password,email= email,salt=salt)
+        password_hist = Passwords_History.objects.create(password=hased_password,user=user)
     return user
 
 def is_user_exists(username):
     try:
         user = Users.objects.get(username= username)
-        return False
-    except Users.DoesNotExist:
         return True
+    except Users.DoesNotExist:
+        return False
 
 def is_email_exists(email):
     try:
         user = Users.objects.get(email= email)
-        return False
-    except Users.DoesNotExist:
         return True
+    except Users.DoesNotExist:
+        return False
 
 def delete_user(username):
     Users.objects.get(username = username).delete()
 
 def change_user_password(username, new_password):
     user = Users.objects.get(username = username)
-    user.password = new_password
-    user.save()
 
-def forgot_password(username):
-    pass
+    with transaction.atomic():
+        hased_password = passwordHandler.hash_password(new_password,user.salt)
+        user.password = hased_password
+        password_hist = Passwords_History(password=hased_password)
+        user.passwords_history.aadd(password_hist)
+        user.save()
+
 
 def get_user_salt(username):
     user = Users.objects.get(username=username)
@@ -42,6 +47,9 @@ def get_user_salt(username):
 def get_user_password(username):
     user = Users.objects.get(username=username)
     return user.password
+
+def get_user_password_history(username):
+    user_passwords = Passwords_History.objects.order_by('index').get(username=username)
 
 def get_failed_login_tries(username):
     user = Users.objects.get(username=username)

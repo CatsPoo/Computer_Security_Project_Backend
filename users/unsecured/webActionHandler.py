@@ -16,7 +16,6 @@ def register(username,password,email):
         raise usersExeptions.EmailIsTakenExeption()
     
     usersHandler.add_user(username,password,email)
-
 def change_password(username,old_password,new_password):
 
     if(not usersHandler.is_user_exists(username)):

@@ -19,11 +19,11 @@ def is_password_valid(password):
     has_numbers = False
     has_speical_letter = False
 
-    if(len(password) < settings.Min_PASSWORD_LENGTH): return False
+    if(len(password) < settings.MIN_PASSWORD_LENGTH): return False
 
     for c in password:
-        if c>= 'a' and c <= 'z':
-            has_numbers==True
+        if c >= 'a' and c <= 'z':
+            has_small_letter=True
         if c >= '0' and c <='9':
             has_numbers=True
         if c >= 'A' and c<='Z':
@@ -32,18 +32,16 @@ def is_password_valid(password):
             has_speical_letter = True
 
     if(settings.MUST_HAVE_CAPITAL_LETTERS and not has_capital_letter): return False
-    if(settings.MUST_HAVE_SMALL_LETTERS and not has_small_letter): return False
+    if(settings.MUST_HAVE_SMALL_LETTERS and not has_small_letter):  return False
     if(settings.MUST_HAVE_NUMBERS and not has_numbers): return False
-    if(settings.MUST_HAVE_SPEICHAL_CHRECTER and not has_capital_letter): return False
-
-    return True
-
+    if(settings.MUST_HAVE_SPEICHAL_CHRECTER and not has_speical_letter): return False
 
     return True
 
 
 def is_passwords_mached(clear_text_password,hashed_password,salt):
     return (hash_password(clear_text_password,salt) == hashed_password)
+
 
 class WeakPasswordExeption(Exception):
     pass

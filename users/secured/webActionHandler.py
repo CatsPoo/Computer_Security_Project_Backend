@@ -27,7 +27,9 @@ def change_password(username,old_password,new_password):
     current_password_on_db = usersHandler.get_user_password(username)
     current_user_salt = usersHandler.get_user_salt(username)
 
-    if(passwordHandler.is_passwords_mached(old_password,current_password_on_db,current_user_salt)):
+    hased_password = passwordHandler.hash_password(old_password,current_user_salt)
+
+    if(current_password_on_db == hased_password):
         usersHandler.change_user_password(username,new_password)
     else:
         raise usersExeptions.WrongCradentialsExeption

@@ -31,21 +31,21 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    #'django.contrib.admin',
+    #'django.contrib.auth',
+    #'django.contrib.contenttypes',
+    #'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'users',
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
+    # 'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.middleware.common.CommonMiddleware',
+    #'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -130,16 +130,15 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = 'P@ssw0rd!Q2w3e4r5t'
-EMAIL_HOST_USER='communication.ltd.prj@gmail.com'
+EMAIL_HOST_USER ='communication.ltd.prj@gmail.com'
 
 
 ##PASSWORD SETTINGS
-PASSWORD_HISTORY_COUNT=3
-MAX_LOGIN_TRIES=3
-Min_PASSWORD_LENGTH=10
-MUST_HAVE_CAPITAL_LETTERS=True
-MUST_HAVE_SMALL_LETTERS=True
-MUST_HAVE_NUMBERS=True
-MUST_HAVE_SPEICHAL_CHRECTER=True
-SPEICHAL_CHRECTER_LIST='!@#$%^&*()_-+=/.><[]\{\}'
-
+PASSWORD_HISTORY_COUNT = 3
+MAX_LOGIN_TRIES = 3
+MIN_PASSWORD_LENGTH = 10
+MUST_HAVE_CAPITAL_LETTERS = True
+MUST_HAVE_SMALL_LETTERS = True
+MUST_HAVE_NUMBERS = True
+MUST_HAVE_SPEICHAL_CHRECTER = True
+SPEICHAL_CHRECTER_LIST = '!@#$%^&*()_-+=/.><[]\{\}'

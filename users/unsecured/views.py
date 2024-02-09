@@ -35,6 +35,7 @@ def register(request: HttpRequest):
         except EmailIsTakenExeption:
             return HttpResponseBadRequest('This Email address is taken')
         except Exception as E:
+            print(E)
             return HttpResponse('Internal Server Error',status=500)
     else:
         return HttpResponseBadRequest()

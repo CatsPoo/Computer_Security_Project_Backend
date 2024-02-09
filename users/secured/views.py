@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 import json
 from users.passwordHandler import WeakPasswordExeption
 from users.usersExeptions import UserIsTakenExeption,EmailIsTakenExeption
-import users.unsecured.webActionHandler as webActionHandler
+import users.secured.webActionHandler as webActionHandler
 from django.views.decorators.csrf import csrf_exempt
 from users.usersExeptions import WrongCradentialsExeption
 # Create your views here.
@@ -36,9 +36,11 @@ def register(request: HttpRequest):
         except EmailIsTakenExeption:
             return HttpResponseBadRequest('This Email address is taken')
         except Exception as E:
+            print(E)
             return HttpResponse('Internal Server Error',status=500)
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Wrong request methos')
+
 
 @csrf_exempt
 def change_password(request: HttpRequest):
@@ -46,9 +48,12 @@ def change_password(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.change_password(data['username'],data['old_password'],data['new_password'])
-            return HttpRequest({})
+            return HttpResponse('Passwords Seccesfuly changes')
         except WeakPasswordExeption:
+            return HttpResponseBadRequest('The password is week')
+        except WrongCradentialsExeption:
             return HttpResponseBadRequest('Wrong Cradentials')
+        
         except Exception as E:
             print(E)
             return HttpResponse('Internal Server Error',status=500)
