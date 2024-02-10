@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 import json
-from users.passwordHandler import WeakPasswordExeption
+from users.passwordHandler import WeakPasswordExeption,PasswordAlreadyWasInUse
 from users.usersExeptions import UserIsTakenExeption,EmailIsTakenExeption,WrongCradentialsExeption
 import users.unsecured.webActionHandler as webActionHandler
 from django.views.decorators.csrf import csrf_exempt
@@ -46,9 +46,13 @@ def change_password(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.change_password(data['username'],data['old_password'],data['new_password'])
-            return HttpRequest({})
+            return HttpResponse("Password Seccessfully Changed")
         except WeakPasswordExeption:
+            return HttpResponseBadRequest('The password is week')
+        except WrongCradentialsExeption:
             return HttpResponseBadRequest('Wrong Cradentials')
+        except PasswordAlreadyWasInUse:
+            return HttpResponseBadRequest('Password Was In Use')
         except Exception as E:
             print(E)
             return HttpResponse('Internal Server Error',status=500)

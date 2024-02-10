@@ -25,6 +25,9 @@ def change_password(username,old_password,new_password):
     if(not passwordHandler.is_password_valid(new_password)):
         raise passwordHandler.WeakPasswordExeption
     
+    if(not passwordHandler.is_password_available(username,new_password)):
+        raise passwordHandler.PasswordAlreadyWasInUse
+    
     current_password_on_db = s_userHandler.get_user_password(username)
     current_user_salt = s_userHandler.get_user_salt(username)
 
