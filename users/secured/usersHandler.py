@@ -1,15 +1,19 @@
 from django.db import connection
 import users.passwordHandler as passwordHandler
-from users.models import Users,Passwords_History
+from users.models import Users,Password
 from django.db import transaction
+
+def get_user(username):
+        return Users.objects.get(username=username)
 
 def add_user(username,password,email):
     salt = passwordHandler.generate_salt()
     hased_password = passwordHandler.hash_password(password,salt)
 
     with transaction.atomic():
-        user = Users.objects.create(username = username, password=hased_password,email= email,salt=salt)
-        password_hist = Passwords_History.objects.create(password=hased_password,user=user)
+        user = Users.objects.create(username = username,email= email)
+        password = passwordHandler.add_password(password=hased_password,salt=salt)
+        user.passwords.add(password)
     return user
 
 def is_user_exists(username):
@@ -31,25 +35,26 @@ def delete_user(username):
 
 def change_user_password(username, new_password):
     user = Users.objects.get(username = username)
-
-    with transaction.atomic():
-        hased_password = passwordHandler.hash_password(new_password,user.salt)
-        user.password = hased_password
-        password_hist = Passwords_History(password=hased_password)
-        user.passwords_history.aadd(password_hist)
-        user.save()
+    user_salt = get_user_salt(username)
+    
+    hased_password = passwordHandler.hash_password(new_password,user_salt)
+    password = passwordHandler.add_password(hased_password,user_salt)
+    print(password.password)
+    user.passwords.add(password)
 
 
 def get_user_salt(username):
-    user = Users.objects.get(username=username)
-    return user.salt
+    passwords = passwordHandler.get_passwords(username)
+    return passwords.last().salt
     
 def get_user_password(username):
-    user = Users.objects.get(username=username)
-    return user.password
+    passwords = passwordHandler.get_passwords(username)
+    print(passwords)
+    return passwords.last().password
 
 def get_user_password_history(username):
-    user_passwords = Passwords_History.objects.order_by('index').get(username=username)
+    passwords = passwordHandler.get_passwords(username)
+    return passwords
 
 def get_failed_login_tries(username):
     user = Users.objects.get(username=username)

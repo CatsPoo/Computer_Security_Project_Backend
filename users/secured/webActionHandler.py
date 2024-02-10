@@ -24,6 +24,9 @@ def change_password(username,old_password,new_password):
     if(not passwordHandler.is_password_valid(new_password)):
         raise passwordHandler.WeakPasswordExeption
     
+    if(not passwordHandler.is_password_available(username,new_password)):
+        raise passwordHandler.PasswordAlreadyWasInUse
+    
     current_password_on_db = usersHandler.get_user_password(username)
     current_user_salt = usersHandler.get_user_salt(username)
 
@@ -43,7 +46,8 @@ def login(username,password):
     user_hashed_password = usersHandler.get_user_password(username)
     users_salt = usersHandler.get_user_salt(username)
 
-    if(passwordHandler.is_passwords_mached(user_hashed_password,password,users_salt)):
+    if(passwordHandler.is_passwords_mached(password,user_hashed_password,users_salt)):
+        usersHandler.update_failed_login_tries(username,0)
         return True
     else:
         current_user_failed_trues = usersHandler.get_failed_login_tries(username)

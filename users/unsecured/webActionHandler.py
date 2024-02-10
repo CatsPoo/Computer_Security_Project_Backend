@@ -42,6 +42,7 @@ def login(username,password):
     users_salt = usersHandler.get_user_salt(username)
 
     if(passwordHandler.is_passwords_mached(user_hashed_password,password,users_salt)):
+        usersHandler.update_failed_login_tries(username,0)
         return True
     else:
         current_user_failed_trues = usersHandler.get_failed_login_tries(username)

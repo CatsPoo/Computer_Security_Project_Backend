@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
 import json
-from users.passwordHandler import WeakPasswordExeption
-from users.usersExeptions import UserIsTakenExeption,EmailIsTakenExeption
+from users.passwordHandler import WeakPasswordExeption,PasswordAlreadyWasInUse
+from users.usersExeptions import UserIsTakenExeption,EmailIsTakenExeption,LockedUserExeption
 import users.secured.webActionHandler as webActionHandler
 from django.views.decorators.csrf import csrf_exempt
 from users.usersExeptions import WrongCradentialsExeption
@@ -17,6 +17,8 @@ def login(request: HttpRequest):
             return HttpResponse('Authorized', status=200)
         except WrongCradentialsExeption:
             return HttpResponse('Not Authorized', status=403)
+        except LockedUserExeption:
+             return HttpResponse('The user is locked', status=403)
         except Exception as E:
             print(E)
             return HttpResponse('Internal Server Error',status=500)
@@ -53,6 +55,8 @@ def change_password(request: HttpRequest):
             return HttpResponseBadRequest('The password is week')
         except WrongCradentialsExeption:
             return HttpResponseBadRequest('Wrong Cradentials')
+        except PasswordAlreadyWasInUse:
+            return HttpResponseBadRequest('Password Was In Use')
         
         except Exception as E:
             print(E)
