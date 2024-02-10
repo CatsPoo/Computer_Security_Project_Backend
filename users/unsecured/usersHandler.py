@@ -5,10 +5,22 @@ def add_user(username,password,email):
     new_user_salt = passwordHandler.generate_salt()
     hashed_password = passwordHandler.hash_password(password,new_user_salt)
 
-    sql_query = f"INSERT INTO users_users (username, password, salt, email)VALUES (\"{username}\", \"{hashed_password}\", \"{new_user_salt}\", \"{email}\");"
+    sql_query1 = f"INSERT INTO users_users (username,email,is_locked,failed_login_tries,reset_password_key)VALUES (\"{username}\", \"{email}\", \"{False}\",\"0\",\"\");"
+    sql_quer2 = f"INSERT INTO users_password (password, salt)VALUES (\"{hashed_password}\", \"{new_user_salt}\");"
+
     with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchone()
+        cursor.execute(sql_query1)
+        cursor.execute("SELECT last_insert_rowid()")
+        user_index = cursor.fetchone()[0]  # Fetch the ID from the result
+        cursor.execute(sql_quer2)
+        cursor.execute("SELECT last_insert_rowid()")
+        password_index = cursor.fetchone()[0] 
+        sql_quer3 = f"INSERT INTO users_users_passwords (users_id, password_id)VALUES (\"{user_index}\", \"{password_index}\");"
+        cursor.execute(sql_quer3)
+
+
+        
+
 
 def is_user_exists(username):
     sql_query = f"select * from users_users where username=\"{username}\""
@@ -39,35 +51,6 @@ def delete_user(username):
         cursor.execute(sql_query)
         row = cursor.fetchone()
 
-def change_user_password(username, new_password):
-    new_user_salt = passwordHandler.generate_salt()
-    hashed_new_password = passwordHandler.hash_password(new_password,new_user_salt)
-    sql_query = f"update users_users set password=\"{hashed_new_password}\", salt=\"{new_user_salt}\" where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchone()
-        return row
-
-def forgot_password(username):
-    pass
-
-def get_user_salt(username):
-    sql_query = f"select salt from users_users where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchone()
-        return row[0]
-    
-def get_user_password(username):
-    sql_query = f"select password from users_users where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchone()
-        return row[0]
-    
 def get_failed_login_tries(username):
     sql_query = f"select failed_login_tries from users_users where username=\"{username}\""
 
@@ -77,7 +60,7 @@ def get_failed_login_tries(username):
         return row[0]
     
 def update_failed_login_tries(username,new_value):
-    sql_query = f"update users_users set failed_login_tries=\"{new_value}\"\" where username=\"{username}\""
+    sql_query = f"update users_users set failed_login_tries=\"{new_value}\" where username=\"{username}\""
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)

@@ -1,6 +1,7 @@
 import json
 import users.passwordHandler as passwordHandler
 import users.unsecured.usersHandler as usersHandler
+import users.secured.usersHandler as s_userHandler
 from users import usersExeptions
 from django.conf import settings
 from django.core.mail import send_mail
@@ -24,11 +25,11 @@ def change_password(username,old_password,new_password):
     if(not passwordHandler.is_password_valid(new_password)):
         raise passwordHandler.WeakPasswordExeption
     
-    current_password_on_db = usersHandler.get_user_password(username)
-    current_user_salt = usersHandler.get_user_salt(username)
+    current_password_on_db = s_userHandler.get_user_password(username)
+    current_user_salt = s_userHandler.get_user_salt(username)
 
     if(passwordHandler.is_passwords_mached(old_password,current_password_on_db,current_user_salt)):
-        usersHandler.change_user_password(username,new_password)
+        s_userHandler.change_user_password(username,new_password)
     else:
         raise usersExeptions.WrongCradentialsExeption
 
@@ -38,10 +39,10 @@ def login(username,password):
     if(usersHandler.get_is_locked_value(username)):
         raise usersExeptions.LockedUserExeption
     
-    user_hashed_password = usersHandler.get_user_password(username)
-    users_salt = usersHandler.get_user_salt(username)
+    user_hashed_password = s_userHandler.get_user_password(username)
+    users_salt = s_userHandler.get_user_salt(username)
 
-    if(passwordHandler.is_passwords_mached(user_hashed_password,password,users_salt)):
+    if(passwordHandler.is_passwords_mached(password,user_hashed_password,users_salt)):
         usersHandler.update_failed_login_tries(username,0)
         return True
     else:
