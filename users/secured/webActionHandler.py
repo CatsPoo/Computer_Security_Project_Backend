@@ -18,22 +18,23 @@ def register(username,password,email):
 
 def change_password(username,old_password,new_password):
 
+    user_id = usersHandler.get_user_id(username)
+
     if(not usersHandler.is_user_exists(username)):
         raise usersExeptions.WrongCradentialsExeption
-    
     if(not passwordHandler.is_password_valid(new_password)):
         raise passwordHandler.WeakPasswordExeption
-    
-    if(not passwordHandler.is_password_available(username,new_password)):
+
+    if(not passwordHandler.is_password_available(user_id,new_password)):
         raise passwordHandler.PasswordAlreadyWasInUse
     
-    current_password_on_db = usersHandler.get_user_password(username)
-    current_user_salt = usersHandler.get_user_salt(username)
+    current_password_on_db = usersHandler.get_user_password(user_id)
+    current_user_salt = usersHandler.get_user_salt(user_id)
 
     hased_password = passwordHandler.hash_password(old_password,current_user_salt)
 
     if(current_password_on_db == hased_password):
-        usersHandler.change_user_password(username,new_password)
+        usersHandler.change_user_password(user_id,new_password)
     else:
         raise usersExeptions.WrongCradentialsExeption
 
@@ -43,8 +44,9 @@ def login(username,password):
     if(usersHandler.get_is_locked_value(username)):
         raise usersExeptions.LockedUserExeption
     
-    user_hashed_password = usersHandler.get_user_password(username)
-    users_salt = usersHandler.get_user_salt(username)
+    user_id = usersHandler.get_user_id(username)
+    user_hashed_password = usersHandler.get_user_password(user_id)
+    users_salt = usersHandler.get_user_salt(user_id)
 
     if(passwordHandler.is_passwords_mached(password,user_hashed_password,users_salt)):
         usersHandler.update_failed_login_tries(username,0)
