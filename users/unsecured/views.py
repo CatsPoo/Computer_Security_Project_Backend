@@ -55,7 +55,7 @@ def change_password(request: HttpRequest):
             return HttpResponseBadRequest('Password Was In Use')
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return HttpResponse(str(E),status=500)
     else:
         return HttpResponseBadRequest('Wrong request method')
     
@@ -70,7 +70,7 @@ def send_reset_password_email(request: HttpRequest):
             return HttpResponseBadRequest('Wrong Cradentials')
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return HttpResponse(str(E),status=500)
     
     else:
         return HttpResponseBadRequest('Wrong request method')
@@ -88,6 +88,6 @@ def reset_password(request:HttpRequest):
             return HttpResponseBadRequest('Week password')
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return HttpResponse(str(E),status=500)
     else:
         return HttpResponseBadRequest('Wrong request method')

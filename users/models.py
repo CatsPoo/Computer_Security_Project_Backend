@@ -10,7 +10,7 @@ class Users(models.Model):
     username = models.CharField(max_length = 20,unique=True)
     passwords = models.ManyToManyField(Password)
     #salt = models.CharField(max_length = 100)
-    email = models.CharField(max_length = 50,unique=True)
+    email = models.EmailField(max_length = 50,unique=True)
     is_locked = models.BooleanField(default=False)
     failed_login_tries = models.SmallIntegerField(default=0)
     reset_password_key = models.CharField(max_length=100,default='')

@@ -19,9 +19,6 @@ def add_user(username,password,email):
         cursor.execute(sql_quer3)
 
 
-        
-
-
 def is_user_exists(username):
     sql_query = f"select * from users_users where username=\"{username}\""
 
@@ -41,7 +38,6 @@ def is_email_exists(email):
 
         if(row): return True
     return False
-
 
 def delete_user(username):
 
