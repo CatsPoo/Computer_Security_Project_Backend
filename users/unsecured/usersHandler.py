@@ -11,15 +11,12 @@ def add_user(username,password,email):
     with connection.cursor() as cursor:
         cursor.execute(sql_query1)
         cursor.execute("SELECT last_insert_rowid()")
-        user_index = cursor.fetchone()[0]  # Fetch the ID from the result
+        user_index = cursor.fetchall()[0]  # Fetch the ID from the result
         cursor.execute(sql_quer2)
         cursor.execute("SELECT last_insert_rowid()")
-        password_index = cursor.fetchone()[0] 
+        password_index = cursor.fetchall()[0] 
         sql_quer3 = f"INSERT INTO users_users_passwords (users_id, password_id)VALUES (\"{user_index}\", \"{password_index}\");"
         cursor.execute(sql_quer3)
-
-
-        
 
 
 def is_user_exists(username):
@@ -27,7 +24,7 @@ def is_user_exists(username):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
 
         if(row): return True
     return False
@@ -37,11 +34,10 @@ def is_email_exists(email):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
 
         if(row): return True
     return False
-
 
 def delete_user(username):
 
@@ -49,14 +45,14 @@ def delete_user(username):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
 
 def get_failed_login_tries(username):
     sql_query = f"select failed_login_tries from users_users where username=\"{username}\""
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row[0]
     
 def update_failed_login_tries(username,new_value):
@@ -64,7 +60,7 @@ def update_failed_login_tries(username,new_value):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row
     
 
@@ -73,7 +69,7 @@ def get_is_locked_value(username):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row[0]
     
 def update_is_lock_value(username,new_value):
@@ -81,7 +77,7 @@ def update_is_lock_value(username,new_value):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row
 
 def get_user_email(username):
@@ -89,7 +85,7 @@ def get_user_email(username):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row[0]
     
 def get_user_reset_password_key(username):
@@ -97,7 +93,7 @@ def get_user_reset_password_key(username):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row[0]
     
 def set_user_reset_password_key(username,key):
@@ -105,5 +101,5 @@ def set_user_reset_password_key(username,key):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchone()
+        row = cursor.fetchall()
         return row
