@@ -9,17 +9,12 @@ def add_user(username,password,email):
     hashed_password = passwordHandler.hash_password(password,new_user_salt)
 
     sql_query1 = "INSERT INTO users_users (username,email,is_locked,failed_login_tries,reset_password_key)VALUES (%s, %s, False,0,\"\");"
-    sql_quer2 = "INSERT INTO users_password (password, salt)VALUES (%s, %s);"
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query1,(username,email,))
         cursor.execute("SELECT last_insert_rowid()")
         user_index = cursor.fetchone()[0]  # Fetch the ID from the result
-        cursor.execute(sql_quer2,(hashed_password,new_user_salt,))
-        cursor.execute("SELECT last_insert_rowid()")
-        password_index = cursor.fetchone()[0] 
-        sql_quer3 = f"INSERT INTO users_users_passwords (users_id, password_id)VALUES (%s, %s);"
-        cursor.execute(sql_quer3,(user_index,password_index,))
+        passwordHandler.add_password(user_index,hashed_password,new_user_salt)
 
 def is_user_exists(username):
     sql_query = f"select * from users_users where username= %s"
@@ -48,55 +43,51 @@ def get_one_property_of_user(username,field):
         cursor.execute(sql_query, (username,))
         row = cursor.fetchall()
         return row
-    
+
+
+def update_one_property_of_user(username,field,value):
+    sql_query = f"update users_users set {field} = %s where username= %s"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query, (value,username,))
+        row = cursor.fetchall()
+        return row
+
 def get_user_id(username):
    return get_one_property_of_user(username,'id')[0][0]
 
-def change_user_password(username, new_password):
-    user_id = get_user_id(username)
-    user_salt = get_user_salt(username)
+def change_user_password(user_id, new_password):
+    user_salt = get_user_salt(user_id)
     
     hased_password = passwordHandler.hash_password(new_password,user_salt) 
+    passwordHandler.add_password(user_id,hased_password,user_salt)
 
-    sql_quer2 = "INSERT INTO users_password (password, salt)VALUES (%s, %s);"
+
+def get_user_salt(user_id):
+    sql_quer2 = "select salt from  users_password where user_id = %s;"
 
     with connection.cursor() as cursor:
-        cursor.execute(sql_quer2,(hased_password,user_salt,))
-        cursor.execute("SELECT last_insert_rowid()")
-        password_index = cursor.fetchone()[0] 
-        sql_quer3 = f"INSERT INTO users_users_passwords (users_id, password_id)VALUES (%s, %s);"
-        cursor.execute(sql_quer3,(user_id,password_index,))
-
-
-def get_user_salt(username):
-    passwords = passwordHandler.get_passwords(username)
-    return passwords.last().salt
+        cursor.execute(sql_quer2,(user_id,))
+        print(user_id)
+        return cursor.fetchone()[0]
     
-def get_user_password(username):
-    passwords = passwordHandler.get_passwords(username)
-    print(passwords)
-    return passwords.last().password
-
-def get_user_password_history(username):
-    return get_one_property_of_user('password_history')
+def get_user_password(user_id):
+    return passwordHandler.get_passwords(user_id)[0]
+    
 
 def get_failed_login_tries(username):
-    return get_one_property_of_user(username,'failed_login_tries')[0]
+    return get_one_property_of_user(username,'failed_login_tries')[0][0]
 
     
 
 def update_failed_login_tries(username,new_value):
-    user = Users.objects.get(username=username)
-    user.failed_login_tries = new_value
-    user.save()
+    update_one_property_of_user(username,'failed_login_tries',new_value)
 
 def get_is_locked_value(username):
     return get_one_property_of_user(username,'is_locked')[0][0]
  
 def update_is_lock_value(username,new_value):
-    user = Users.objects.get(username=username)
-    user.is_locked=new_value
-    user.save()
+    update_one_property_of_user(username,'is_locked',new_value)
 
 def get_user_email(username):
     return get_one_property_of_user(username,'email')[0][0]
@@ -105,8 +96,6 @@ def get_user_reset_password_key(username):
     return get_one_property_of_user(username,'reset_password_key')[0][0]
     
 def set_user_reset_password_key(username,key):
-    user = Users.objects.get(username=username)
-    user.reset_password_key=key
-    user.save()
+    update_one_property_of_user(username,'reset_password_key',key)
 
     

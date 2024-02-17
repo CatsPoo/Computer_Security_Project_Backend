@@ -4,15 +4,23 @@ from Comunication_LTD.hashHandler import generate_hmac
 from django.conf import settings
 from  .models import Users, Password
 from .secured import  usersHandler
+from django.db import connection
 
-def add_password(password,salt):
-    password = Password(password = password,salt=salt)
-    password.save()
-    return Password.objects.order_by('index').last()
+def add_password(user_id,password,salt):
+    sql_query = "INSERT INTO users_password (user_id,password, salt)VALUES (%s,%s, %s);"
 
-def get_passwords(username):
-    passwords = Password.objects.filter(users__username = username).order_by('index')
-    return passwords
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query,(user_id,password,salt,))
+        row = cursor.fetchone()
+        return row
+    
+def get_passwords(user_id):
+    sql_query = "select password from users_password where user_id =  %s;"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query,(user_id,))
+        row = cursor.fetchall()
+        return [i[0] for i in row][::-1]
 
 
 def hash_password(password,salt):
@@ -50,12 +58,12 @@ def is_password_valid(password):
 
     return True
 
-def is_password_available(username,password):
-    salt = usersHandler.get_user_salt(username)
-    user_passwords_hist = get_passwords(username).order_by('-index')
+def is_password_available(user_id,password):
+    salt = usersHandler.get_user_salt(user_id)
+    user_passwords_hist = get_passwords(user_id)
     n_last_passwords = user_passwords_hist[:settings.PASSWORD_HISTORY_COUNT]
     for passwd in n_last_passwords:
-        if(is_passwords_mached(password,passwd.password,salt)):
+        if(is_passwords_mached(password,passwd,salt)):
             return False
     return True
 

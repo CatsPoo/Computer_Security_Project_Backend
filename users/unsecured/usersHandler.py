@@ -6,17 +6,12 @@ def add_user(username,password,email):
     hashed_password = passwordHandler.hash_password(password,new_user_salt)
 
     sql_query1 = f"INSERT INTO users_users (username,email,is_locked,failed_login_tries,reset_password_key)VALUES (\"{username}\", \"{email}\", \"{False}\",\"0\",\"\");"
-    sql_quer2 = f"INSERT INTO users_password (password, salt)VALUES (\"{hashed_password}\", \"{new_user_salt}\");"
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query1)
         cursor.execute("SELECT last_insert_rowid()")
-        user_index = cursor.fetchall()[0]  # Fetch the ID from the result
-        cursor.execute(sql_quer2)
-        cursor.execute("SELECT last_insert_rowid()")
-        password_index = cursor.fetchall()[0] 
-        sql_quer3 = f"INSERT INTO users_users_passwords (users_id, password_id)VALUES (\"{user_index}\", \"{password_index}\");"
-        cursor.execute(sql_quer3)
+        user_index = cursor.fetchall()[0][0]  # Fetch the ID from the result
+        passwordHandler.add_password(user_index,hashed_password,new_user_salt)
 
 
 def is_user_exists(username):
@@ -39,62 +34,6 @@ def is_email_exists(email):
         if(row): return True
     return False
 
-def delete_user(username):
-
-    sql_query = f"delete from users_users where username={username}"
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchall()
-
-def get_failed_login_tries(username):
-    sql_query = f"select failed_login_tries from users_users where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchall()
-        return row[0]
-    
-def update_failed_login_tries(username,new_value):
-    sql_query = f"update users_users set failed_login_tries=\"{new_value}\" where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchall()
-        return row
-    
-
-def get_is_locked_value(username):
-    sql_query = f"select is_locked from users_users where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchall()
-        return row[0]
-    
-def update_is_lock_value(username,new_value):
-    sql_query = f"update users_users set is_locked=\"{new_value}\"\" where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchall()
-        return row
-
-def get_user_email(username):
-    sql_query = f"select email from users_users where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchall()
-        return row[0]
-    
-def get_user_reset_password_key(username):
-    sql_query = f"select reset_password_key from users_users where username=\"{username}\""
-
-    with connection.cursor() as cursor:
-        cursor.execute(sql_query)
-        row = cursor.fetchall()
-        return row[0]
     
 def set_user_reset_password_key(username,key):
     sql_query = f"update users_users set reset_password_key=\"{key}\" where username=\"{username}\""
@@ -103,3 +42,70 @@ def set_user_reset_password_key(username,key):
         cursor.execute(sql_query)
         row = cursor.fetchall()
         return row
+    
+
+
+def get_one_property_of_user(username,field):
+    sql_query = f"select {field} from users_users where username= \"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchall()
+        return row
+
+
+def update_one_property_of_user(username,field,value):
+    sql_query = f"update users_users set {field} = \"{value}\" where username= \"{username}\""
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query)
+        row = cursor.fetchall()
+        return row
+
+def get_user_id(username):
+   return get_one_property_of_user(username,'id')[0][0]
+
+def change_user_password(user_id, new_password):
+    user_salt = get_user_salt(user_id)
+    
+    hased_password = passwordHandler.hash_password(new_password,user_salt) 
+    passwordHandler.add_password(user_id,hased_password,user_salt)
+
+
+def get_user_salt(user_id):
+    sql_quer2 = "select salt from  users_password where user_id = %s;"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_quer2,(user_id,))
+        print(user_id)
+        return cursor.fetchone()[0]
+    
+
+def get_user_password(user_id):
+    return passwordHandler.get_passwords(user_id)[0]
+    
+
+def get_failed_login_tries(username):
+    return get_one_property_of_user(username,'failed_login_tries')[0][0]
+
+    
+
+def update_failed_login_tries(username,new_value):
+    update_one_property_of_user(username,'failed_login_tries',new_value)
+
+def get_is_locked_value(username):
+    return get_one_property_of_user(username,'is_locked')[0][0]
+ 
+def update_is_lock_value(username,new_value):
+    update_one_property_of_user(username,'is_locked',new_value)
+
+def get_user_email(username):
+    return get_one_property_of_user(username,'email')[0][0]
+
+def get_user_reset_password_key(username):
+    return get_one_property_of_user(username,'reset_password_key')[0][0]
+    
+def set_user_reset_password_key(username,key):
+    update_one_property_of_user(username,'reset_password_key',key)
+
+    
