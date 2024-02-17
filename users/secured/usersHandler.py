@@ -3,44 +3,69 @@ import users.passwordHandler as passwordHandler
 from users.models import Users,Password
 from django.db import transaction
 
-def get_user(username):
-        return Users.objects.get(username=username)
 
 def add_user(username,password,email):
-    salt = passwordHandler.generate_salt()
-    hased_password = passwordHandler.hash_password(password,salt)
+    new_user_salt = passwordHandler.generate_salt()
+    hashed_password = passwordHandler.hash_password(password,new_user_salt)
 
-    with transaction.atomic():
-        user = Users.objects.create(username = username,email= email)
-        password = passwordHandler.add_password(password=hased_password,salt=salt)
-        user.passwords.add(password)
-    return user
+    sql_query1 = "INSERT INTO users_users (username,email,is_locked,failed_login_tries,reset_password_key)VALUES (%s, %s, False,0,\"\");"
+    sql_quer2 = "INSERT INTO users_password (password, salt)VALUES (%s, %s);"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query1,(username,email,))
+        cursor.execute("SELECT last_insert_rowid()")
+        user_index = cursor.fetchone()[0]  # Fetch the ID from the result
+        cursor.execute(sql_quer2,(hashed_password,new_user_salt,))
+        cursor.execute("SELECT last_insert_rowid()")
+        password_index = cursor.fetchone()[0] 
+        sql_quer3 = f"INSERT INTO users_users_passwords (users_id, password_id)VALUES (%s, %s);"
+        cursor.execute(sql_quer3,(user_index,password_index,))
 
 def is_user_exists(username):
-    try:
-        user = Users.objects.get(username= username)
-        return True
-    except Users.DoesNotExist:
-        return False
+    sql_query = f"select * from users_users where username= %s"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query,(username,))
+        row = cursor.fetchone()
+
+        if(row): return True
+    return False
 
 def is_email_exists(email):
-    try:
-        user = Users.objects.get(email= email)
-        return True
-    except Users.DoesNotExist:
-        return False
+    sql_query = f"select * from users_users where email= %s"
 
-def delete_user(username):
-    Users.objects.get(username = username).delete()
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query,(email,))
+        row = cursor.fetchall()
+
+        if(row): return True
+    return False
+
+def get_one_property_of_user(username,field):
+    sql_query = f"select {field} from users_users where username= %s"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query, (username,))
+        row = cursor.fetchall()
+        return row
+    
+def get_user_id(username):
+   return get_one_property_of_user(username,'id')[0][0]
 
 def change_user_password(username, new_password):
-    user = Users.objects.get(username = username)
+    user_id = get_user_id(username)
     user_salt = get_user_salt(username)
     
-    hased_password = passwordHandler.hash_password(new_password,user_salt)
-    password = passwordHandler.add_password(hased_password,user_salt)
-    print(password.password)
-    user.passwords.add(password)
+    hased_password = passwordHandler.hash_password(new_password,user_salt) 
+
+    sql_quer2 = "INSERT INTO users_password (password, salt)VALUES (%s, %s);"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_quer2,(hased_password,user_salt,))
+        cursor.execute("SELECT last_insert_rowid()")
+        password_index = cursor.fetchone()[0] 
+        sql_quer3 = f"INSERT INTO users_users_passwords (users_id, password_id)VALUES (%s, %s);"
+        cursor.execute(sql_quer3,(user_id,password_index,))
 
 
 def get_user_salt(username):
@@ -53,12 +78,12 @@ def get_user_password(username):
     return passwords.last().password
 
 def get_user_password_history(username):
-    passwords = passwordHandler.get_passwords(username)
-    return passwords
+    return get_one_property_of_user('password_history')
 
 def get_failed_login_tries(username):
-    user = Users.objects.get(username=username)
-    return user.failed_login_tries
+    return get_one_property_of_user(username,'failed_login_tries')[0]
+
+    
 
 def update_failed_login_tries(username,new_value):
     user = Users.objects.get(username=username)
@@ -66,8 +91,7 @@ def update_failed_login_tries(username,new_value):
     user.save()
 
 def get_is_locked_value(username):
-    user = Users.objects.get(username=username)
-    return user.is_locked
+    return get_one_property_of_user(username,'is_locked')[0][0]
  
 def update_is_lock_value(username,new_value):
     user = Users.objects.get(username=username)
@@ -75,12 +99,10 @@ def update_is_lock_value(username,new_value):
     user.save()
 
 def get_user_email(username):
-    user = Users.objects.get(username=username)
-    return user.email
+    return get_one_property_of_user(username,'email')[0][0]
 
 def get_user_reset_password_key(username):
-    user = Users.objects.get(username=username)
-    return user.reset_password_key
+    return get_one_property_of_user(username,'reset_password_key')[0][0]
     
 def set_user_reset_password_key(username,key):
     user = Users.objects.get(username=username)
