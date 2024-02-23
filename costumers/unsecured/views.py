@@ -9,7 +9,7 @@ def add_costumer(request: HttpRequest):
         try:
             data = json.loads(request.body)
             res = costumersHandller.add_costumer(data['name'],data['email'],data['phone_number'])
-            return JsonResponse({'message':'Costumer addedd seccesfully'})
+            return JsonResponse({'message':'Costumer addedd דuccessfully'})
         except Exception as E:
             print(str(E))
             return JsonResponse({'error':str(E)},500)
