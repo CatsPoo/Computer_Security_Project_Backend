@@ -29,7 +29,7 @@ def get_costumer(email):
     with connection.cursor() as cursor:
         cursor.execute(sql_query,email,)
         row = cursor.fetchone()
-        return row
+        return row[0]
 
 
 def is_email_exists(email):
