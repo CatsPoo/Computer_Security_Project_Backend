@@ -9,6 +9,8 @@ def add_costumer(request: HttpRequest):
     if(request.method == 'POST'):
         try:
             data = json.loads(request.body)
+            if(costumersHandller.is_costumer_exists(data['email'])):
+                return JsonResponse({'error': 'This email already in use'})
             res = costumersHandller.add_costumer(data['name'],data['email'],data['phone_number'])
             return JsonResponse({'message':'Costumer addedd successfully'},status = 200)
         except costumersHandller.EmailIsTakenExeption:
