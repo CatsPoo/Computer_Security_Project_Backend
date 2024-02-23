@@ -14,14 +14,14 @@ def login(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.login(data['username'],data['password'])
-            return HttpResponse('Authorized', status=200)
+            return HttpResponse({'message':'Authorized'}, status=200)
         except WrongCradentialsExeption:
-            return HttpResponse('Not Authorized', status=403)
+            return HttpResponse({'error':'Not Authorized'}, status=403)
         except LockedUserExeption:
-             return HttpResponse('The user is locked', status=403)
+             return HttpResponse({'error':'The user is locked'}, status=403)
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return HttpResponse({'error':'Internal Server Error'},status=500)
         
 @csrf_exempt
 def register(request: HttpRequest):
@@ -29,19 +29,19 @@ def register(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.register(data['username'],data['password'],data['email'])
-            return HttpResponse('Registerd Seccesfully', status=200)
+            return HttpResponse({'message':'Registerd Seccesfully'}, status=200)
         
         except WeakPasswordExeption:
-            return HttpResponseBadRequest('Weak password')
+            return HttpResponseBadRequest({'error':'Weak password'})
         except UserIsTakenExeption:
-            return HttpResponseBadRequest('This username is taken')
+            return HttpResponseBadRequest({'error':'This username is taken'})
         except EmailIsTakenExeption:
-            return HttpResponseBadRequest('This Email address is taken')
+            return HttpResponseBadRequest({'error':'This Email address is taken'})
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return HttpResponse({'error':'Internal Server Error'},status=500)
     else:
-        return HttpResponseBadRequest('Wrong request methos')
+        return HttpResponseBadRequest({'error':'Wrong request methos'})
 
 
 @csrf_exempt

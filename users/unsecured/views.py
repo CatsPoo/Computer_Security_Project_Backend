@@ -29,11 +29,11 @@ def register(request: HttpRequest):
             return HttpResponse(json.dumps({'message':'Registerd Seccesfully'}), status=200)
         
         except WeakPasswordExeption:
-            return HttpResponseBadRequest({'error':'Weak password'})
+            return HttpResponse({'error':'Weak password'},status=400)
         except UserIsTakenExeption:
-            return HttpResponseBadRequest({'error':'This username is taken'})
+            return HttpResponse({'error':'This username is taken'},status=400)
         except EmailIsTakenExeption:
-            return HttpResponseBadRequest({'error':'This Email address is taken'})
+            return HttpResponse({'error':'This Email address is taken'},status=400)
         except Exception as E:
             print(E)
             return HttpResponse({'error':str(E)},status=500)
@@ -57,7 +57,7 @@ def change_password(request: HttpRequest):
             print(E)
             return HttpResponse({'error':str(E)},status=500)
     else:
-        return HttpResponseBadRequest({'error':'Wrong request method'})
+        return HttpResponse({'error':'Wrong request method'},status=400)
     
 @csrf_exempt
 def send_reset_password_email(request: HttpRequest):
