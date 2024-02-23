@@ -13,12 +13,12 @@ def login(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.login(data['username'],data['password'])
-            return HttpResponse('Authorized', status=200)
+            return HttpResponse({'message':'Authorized'}, status=200)
         except WrongCradentialsExeption:
-            return HttpResponse('Not Authorized', status=403)
+            return HttpResponse({'error':'Not Authorized'}, status=403)
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return HttpResponse({'error':'Internal Server Error'},status=500)
         
 @csrf_exempt
 def register(request: HttpRequest):
@@ -29,14 +29,14 @@ def register(request: HttpRequest):
             return HttpResponse(json.dumps({'message':'Registerd Seccesfully'}), status=200)
         
         except WeakPasswordExeption:
-            return HttpResponseBadRequest({'message':'Weak password'})
+            return HttpResponseBadRequest({'error':'Weak password'})
         except UserIsTakenExeption:
-            return HttpResponseBadRequest({'message':'This username is taken'})
+            return HttpResponseBadRequest({'error':'This username is taken'})
         except EmailIsTakenExeption:
-            return HttpResponseBadRequest({'message':'This Email address is taken'})
+            return HttpResponseBadRequest({'error':'This Email address is taken'})
         except Exception as E:
             print(E)
-            return HttpResponse({'message':'Internal Server Error'},status=500)
+            return HttpResponse({'error':str(E)},status=500)
     else:
         return HttpResponseBadRequest()
 
@@ -46,18 +46,18 @@ def change_password(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.change_password(data['username'],data['old_password'],data['new_password'])
-            return HttpResponse("Password Seccessfully Changed")
+            return HttpResponse({'message':"Password Seccessfully Changed"})
         except WeakPasswordExeption:
-            return HttpResponseBadRequest('The password is week')
+            return HttpResponseBadRequest({'error':'The password is week'})
         except WrongCradentialsExeption:
-            return HttpResponseBadRequest('Wrong Cradentials')
+            return HttpResponseBadRequest({'error':'Wrong Cradentials'})
         except PasswordAlreadyWasInUse:
-            return HttpResponseBadRequest('Password Was In Use')
+            return HttpResponseBadRequest({'error':'Password Was In Use'})
         except Exception as E:
             print(E)
-            return HttpResponse(str(E),status=500)
+            return HttpResponse({'error':str(E)},status=500)
     else:
-        return HttpResponseBadRequest('Wrong request method')
+        return HttpResponseBadRequest({'error':'Wrong request method'})
     
 @csrf_exempt
 def send_reset_password_email(request: HttpRequest):
@@ -65,15 +65,15 @@ def send_reset_password_email(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.send_reset_password_mail(data['username'],data['email'])
-            return HttpRequest({})
+            return HttpRequest({'message':'OK'})
         except WrongCradentialsExeption:
-            return HttpResponseBadRequest('Wrong Cradentials')
+            return HttpResponseBadRequest({'error':'Wrong Cradentials'})
         except Exception as E:
             print(E)
-            return HttpResponse(str(E),status=500)
+            return HttpResponse({'error':str(E)},status=500)
     
     else:
-        return HttpResponseBadRequest('Wrong request method')
+        return HttpResponseBadRequest({'error':'Wrong request method'})
 
 @csrf_exempt
 def reset_password(request:HttpRequest):
@@ -81,13 +81,13 @@ def reset_password(request:HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.reset_password_mail(data['username'],data['key'],data['new_password'])
-            return HttpRequest({})
+            return HttpRequest({'message':'OK'})
         except WrongCradentialsExeption:
-            return HttpResponseBadRequest('Wrong Cradentials')
+            return HttpResponseBadRequest({'error':'Wrong Cradentials'})
         except WeakPasswordExeption:
-            return HttpResponseBadRequest('Week password')
+            return HttpResponseBadRequest({'error':'Week password'})
         except Exception as E:
             print(E)
-            return HttpResponse(str(E),status=500)
+            return HttpResponse({'error':str(E)},status=500)
     else:
-        return HttpResponseBadRequest('Wrong request method')
+        return HttpResponseBadRequest({'error':'Wrong request method'})
