@@ -26,7 +26,7 @@ def get_costumer(email):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
-        row = cursor.fetchall()
+        row = cursor.fetchone()
         print(row)
         return row
         
