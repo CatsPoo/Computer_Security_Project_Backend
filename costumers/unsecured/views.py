@@ -24,7 +24,7 @@ def get_costumer(request: HttpRequest):
     if(request.method == 'GET'):
         try:
             res = costumersHandller.get_costumer(request.GET.get('email'))
-            return JsonResponse({'message': res})
+            return JsonResponse({'message': json.loads(res)})
         except Exception as E:
             print(str(E))
             return JsonResponse({'error':str(E)},500)
