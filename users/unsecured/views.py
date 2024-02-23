@@ -26,7 +26,7 @@ def register(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.register(data['username'],data['password'],data['email'])
-            return HttpResponse({'message':'Registerd Seccesfully'}, status=200)
+            return HttpResponse(json.dumps({'message':'Registerd Seccesfully'}), status=200)
         
         except WeakPasswordExeption:
             return HttpResponseBadRequest({'message':'Weak password'})
