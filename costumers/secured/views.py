@@ -10,7 +10,7 @@ def add_costumer(request: HttpRequest):
         try:
             data = json.loads(request.body)
             res = costumersHandller.add_costumer(data['name'],data['email'],data['phone_number'])
-            return JsonResponse({'message':'Costumer addedd Successfully'},status = 200)
+            return JsonResponse({'message':'Costumer addedd successfully'},status = 200)
         except costumersHandller.EmailIsTakenExeption:
             return JsonResponse({'error':'This costumer already exist'},status = 400)
         except Exception as E:
