@@ -26,7 +26,7 @@ def register(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.register(data['username'],data['password'],data['email'])
-            return HttpResponse(json.dumps({'message':'Registerd Seccesfully'}), status=200)
+            return HttpResponse({'message':'Registerd Seccesfully'}, status=200)
         
         except WeakPasswordExeption:
             return HttpResponse({'error':'Weak password'},status=400)
@@ -38,7 +38,7 @@ def register(request: HttpRequest):
             print(E)
             return HttpResponse({'error':str(E)},status=500)
     else:
-        return HttpResponseBadRequest()
+        return HttpResponse({'error':'Wrong Request Method'}, status = 400)
 
 @csrf_exempt
 def change_password(request: HttpRequest):

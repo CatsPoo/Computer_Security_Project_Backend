@@ -10,15 +10,15 @@ def add_costumer(request: HttpRequest):
         try:
             data = json.loads(request.body)
             res = costumersHandller.add_costumer(data['name'],data['email'],data['phone_number'])
-            return HttpResponse('Costumer addedd seccesfully')
+            return HttpResponse({'message':'Costumer addedd seccesfully'},status = 200)
         except costumersHandller.EmailIsTakenExeption:
-            return HttpResponseBadRequest('This costumer already exist')
+            return HttpResponseBadRequest({'error':'This costumer already exist'},status = 400)
         except Exception as E:
             print(str(E))
-            return HttpResponse('Internal server error',500)
+            return HttpResponse({'error' :'Internal server error'},status = 500)
 
     else:
-        return HttpResponseBadRequest('Wrong request method')
+        return HttpResponseBadRequest({'error' :'Wrong request method'},status = 200)
  
 
 def get_costumer(request: HttpRequest):
@@ -26,13 +26,13 @@ def get_costumer(request: HttpRequest):
         try:
             data = json.loads(request.body)
             res = costumersHandller.get_costumer(data['email'])
-            return HttpResponse(res)
+            return HttpResponse({'message' :res},status = 200)
         except costumersHandller.CostumerDoesntExistExeption:
-            return HttpResponseBadRequest('This costumer doesn\'t exists')
+            return HttpResponseBadRequest({'error' :'This costumer doesn\'t exists'},status = 400)
         except Exception as E:
             print(str(E))
-            return HttpResponse('Internal server error',500)
+            return HttpResponse({'error' :'Internal server error'},500)
 
     else:
-        return HttpResponseBadRequest('Wrong request method')
+        return HttpResponseBadRequest({'error' :'Wrong request method'})
  
