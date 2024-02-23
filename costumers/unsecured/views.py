@@ -12,7 +12,7 @@ def add_costumer(request: HttpRequest):
             return JsonResponse({'message':'Costumer addedd seccesfully'})
         except Exception as E:
             print(str(E))
-            return JsonResponse(str(E),500)
+            return JsonResponse({'error':str(E)},500)
 
     else:
         return JsonResponse({'error':'Wrong request method'})
