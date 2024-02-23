@@ -28,7 +28,7 @@ def get_costumer(request: HttpRequest):
         try:
             data = json.loads(request.headers)
             res = costumersHandller.get_costumer(request.GET.get('email'))
-            return JsonResponse({'message' : json.loads(res)},status = 200)
+            return JsonResponse({'message' : json.dumps(res)},status = 200)
         except costumersHandller.CostumerDoesntExistExeption:
             return JsonResponse({'error' :'This costumer doesn\'t exists'},status = 400)
         except Exception as E:
