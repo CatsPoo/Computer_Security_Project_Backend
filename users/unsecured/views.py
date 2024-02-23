@@ -26,17 +26,17 @@ def register(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.register(data['username'],data['password'],data['email'])
-            return HttpResponse('Registerd Seccesfully', status=200)
+            return HttpResponse({'message':'Registerd Seccesfully'}, status=200)
         
         except WeakPasswordExeption:
-            return HttpResponseBadRequest('Weak password')
+            return HttpResponseBadRequest({'message':'Weak password'})
         except UserIsTakenExeption:
-            return HttpResponseBadRequest('This username is taken')
+            return HttpResponseBadRequest({'message':'This username is taken'})
         except EmailIsTakenExeption:
-            return HttpResponseBadRequest('This Email address is taken')
+            return HttpResponseBadRequest({'message':'This Email address is taken'})
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return HttpResponse({'message':'Internal Server Error'},status=500)
     else:
         return HttpResponseBadRequest()
 
