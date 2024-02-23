@@ -9,13 +9,13 @@ def add_costumer(request: HttpRequest):
         try:
             data = json.loads(request.body)
             res = costumersHandller.add_costumer(data['name'],data['email'],data['phone_number'])
-            return JsonResponse('Costumer addedd seccesfully')
+            return JsonResponse({'message':'Costumer addedd seccesfully'})
         except Exception as E:
             print(str(E))
             return JsonResponse(str(E),500)
 
     else:
-        return JsonResponse('Wrong request method')
+        return JsonResponse({'error':'Wrong request method'})
  
 
 def get_costumer(request: HttpRequest):
@@ -23,11 +23,11 @@ def get_costumer(request: HttpRequest):
         try:
             data = json.loads(request.body)
             res = costumersHandller.get_costumer(data['email'])
-            return JsonResponse(res)
+            return JsonResponse({'message: res'})
         except Exception as E:
             print(str(E))
-            return JsonResponse(str(E),500)
+            return JsonResponse({'error':str(E)},500)
 
     else:
-        return JsonResponse('Wrong request method')
+        return JsonResponse({'error':'Wrong request method'},status = 400)
  
