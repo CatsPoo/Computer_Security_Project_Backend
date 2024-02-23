@@ -23,7 +23,7 @@ def add_costumer(request: HttpRequest):
 def get_costumer(request: HttpRequest):
     if(request.method == 'GET'):
         try:
-            res = costumersHandller.get_costumer(request.headers.get['email'])
+            res = costumersHandller.get_costumer(request.headers.get('email'))
             return JsonResponse({'message: res'})
         except Exception as E:
             print(str(E))
