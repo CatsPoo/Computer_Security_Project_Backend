@@ -46,13 +46,13 @@ def change_password(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.change_password(data['username'],data['old_password'],data['new_password'])
-            return JsonResponse({'message':"Password Seccessfully Changed"})
+            return JsonResponse({'message':"Password Seccessfully Changed"},status=200)
         except WeakPasswordExeption:
-            return JsonResponse({'error':'The password is week'})
+            return JsonResponse({'error':'The password is week'},status = 400)
         except WrongCradentialsExeption:
-            return JsonResponse({'error':'Wrong Cradentials'})
+            return JsonResponse({'error':'Wrong Cradentials'},status = 400)
         except PasswordAlreadyWasInUse:
-            return JsonResponse({'error':'Password Was In Use'})
+            return JsonResponse({'error':'Password Was In Use'},status = 400)
         except Exception as E:
             print(E)
             return JsonResponse({'error':str(E)},status=500)
