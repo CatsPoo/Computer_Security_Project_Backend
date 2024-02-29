@@ -73,7 +73,7 @@ TEMPLATES = [
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = (
-    'http://localhost:4200',
+    'https://localhost:4200',
     # Add other origins if needed
 )
 
