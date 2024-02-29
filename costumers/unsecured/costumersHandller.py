@@ -13,7 +13,7 @@ def is_costumer_exists(email):
     return False
 
 def add_costumer(name,email,phone_number):
-    sql_query = f"INSERT INTO costumers_costumer (name,email,phone_number) VALUES ({name}, {email}, {phone_number})"
+    sql_query = f"INSERT INTO costumers_costumer (name,email,phone_number) VALUES (\"{name}\", \"{email}\", \"{phone_number}\")"
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query)
