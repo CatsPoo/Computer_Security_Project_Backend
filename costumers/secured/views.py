@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest
 import json
 from costumers.secured import costumersHandller
 
+
 # Create your views here.
 
 def add_costumer(request: HttpRequest):
@@ -26,15 +27,11 @@ def add_costumer(request: HttpRequest):
 def get_costumer(request: HttpRequest):
     if(request.method == 'GET'):
         try:
-            data = json.loads(request.headers)
             res = costumersHandller.get_costumer(request.GET.get('email'))
-            return JsonResponse({'message' : json.dumps(res)},status = 200)
-        except costumersHandller.CostumerDoesntExistExeption:
-            return JsonResponse({'error' :'This costumer doesn\'t exists'},status = 400)
+            return JsonResponse({'message': json.dumps(res)})
         except Exception as E:
             print(str(E))
-            return JsonResponse({'error' :'Internal server error'},500)
+            return JsonResponse({'error':str(E)},500)
 
     else:
-        return JsonResponse({'error' :'Wrong request method'})
- 
+        return JsonResponse({'error':'Wrong request method'},status = 400)
