@@ -59,35 +59,33 @@ def change_password(request: HttpRequest):
     else:
         return JsonResponse({'error':'Wrong request method'},status=400)
     
-@csrf_exempt
 def send_reset_password_email(request: HttpRequest):
     if(request.method=='POST'):
         try:
             data = json.loads(request.body)
             webActionHandler.send_reset_password_mail(data['username'],data['email'])
-            return JsonResponse({'message':'OK'})
+            return JsonResponse({'message' :'ok'},status = 200)
         except WrongCradentialsExeption:
-            return JsonResponse({'error':'Wrong Cradentials'})
+            return JsonResponse({'error':'Wrong Cradentials'},status = 400)
         except Exception as E:
             print(E)
-            return JsonResponse({'error':str(E)},status=500)
+            return JsonResponse({'error':'Internal Server Error'},status=500)
     
     else:
-        return JsonResponse({'error':'Wrong request method'})
+        return JsonResponse({'error':'Wrong request method'},status = 400)
 
-@csrf_exempt
 def reset_password(request:HttpRequest):
     if(request.method=='POST'):
         try:
             data = json.loads(request.body)
             webActionHandler.reset_password_mail(data['username'],data['key'],data['new_password'])
-            return JsonResponse({'message':'OK'})
+            return JsonResponse({'message': 'OK'},status = 200)
         except WrongCradentialsExeption:
-            return JsonResponse({'error':'Wrong Cradentials'})
+            return JsonResponse({'error':'Wrong Cradentials'},status = 400)
         except WeakPasswordExeption:
-            return JsonResponse({'error':'Week password'})
+            return JsonResponse({'error':'Week password'},status = 200)
         except Exception as E:
             print(E)
-            return JsonResponse({'error':str(E)},status=500)
+            return JsonResponse({'error':'Internal Server Error'},status=500)
     else:
-        return JsonResponse({'error':'Wrong request method'})
+        return JsonResponse({'error':'Wrong request method'},status = 400)
