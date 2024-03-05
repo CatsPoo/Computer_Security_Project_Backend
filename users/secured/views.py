@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpRequest, HttpResponseBadRequest
+from django.http import JsonResponse, HttpRequest, HttpResponseBadRequest
 import json
 from users.passwordHandler import WeakPasswordExeption,PasswordAlreadyWasInUse
 from users.usersExeptions import UserIsTakenExeption,EmailIsTakenExeption,LockedUserExeption
@@ -14,14 +14,14 @@ def login(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.login(data['username'],data['password'])
-            return HttpResponse('Authorized', status=200)
+            return JsonResponse({'message':'Authorized'}, status=200)
         except WrongCradentialsExeption:
-            return HttpResponse('Not Authorized', status=403)
+            return JsonResponse({'error':'Not Authorized'}, status=403)
         except LockedUserExeption:
-             return HttpResponse('The user is locked', status=403)
+             return JsonResponse({'error':'The user is locked'}, status=403)
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return JsonResponse({'error':'Internal Server Error'},status=500)
         
 @csrf_exempt
 def register(request: HttpRequest):
@@ -29,19 +29,19 @@ def register(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.register(data['username'],data['password'],data['email'])
-            return HttpResponse('Registerd Seccesfully', status=200)
+            return JsonResponse({'message':'Registerd Seccesfully'}, status=200)
         
         except WeakPasswordExeption:
-            return HttpResponseBadRequest('Weak password')
+            return JsonResponse({'error':'Weak password'})
         except UserIsTakenExeption:
-            return HttpResponseBadRequest('This username is taken')
+            return JsonResponse({'error':'This username is taken'})
         except EmailIsTakenExeption:
-            return HttpResponseBadRequest('This Email address is taken')
+            return JsonResponse({'error':'This Email address is taken'})
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return JsonResponse({'error':'Internal Server Error'},status=500)
     else:
-        return HttpResponseBadRequest('Wrong request methos')
+        return JsonResponse({'error':'Wrong request methos'})
 
 
 @csrf_exempt
@@ -50,19 +50,19 @@ def change_password(request: HttpRequest):
         try:
             data = json.loads(request.body)
             webActionHandler.change_password(data['username'],data['old_password'],data['new_password'])
-            return HttpResponse('Passwords Seccesfuly changes')
+            return JsonResponse({'message':'Passwords Seccesfuly changes'},status = 200)
         except WeakPasswordExeption:
-            return HttpResponseBadRequest('The password is week')
+            return JsonResponse({'error':'The password is week'},status = 400)
         except WrongCradentialsExeption:
-            return HttpResponseBadRequest('Wrong Cradentials')
+            return JsonResponse({'error':'Wrong Cradentials'},status = 400)
         except PasswordAlreadyWasInUse:
-            return HttpResponseBadRequest('Password Was In Use')
+            return JsonResponse({'error':'Password Was In Use'},status = 400)
         
         except Exception as E:
             print(E)
-            return HttpResponse('Internal Server Error',status=500)
+            return JsonResponse({'error':'Internal Server Error'},status=500)
     else:
-        return HttpResponseBadRequest('Wrong request method')
+        return JsonResponse({'error':'Wrong request method'},status = 400)
     
 @csrf_exempt
 def send_reset_password_email(request: HttpRequest):
