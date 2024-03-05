@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 import random
 from Comunication_LTD.hashHandler import sha1_hash
+import Comunication_LTD.smtp as mail
 
 def register(username,password,email):
     if(not passwordHandler.is_password_valid(password)):
@@ -76,21 +77,18 @@ def send_reset_password_mail(username,email):
 
     usersHandler.set_user_reset_password_key(username,hased_reset_pasword_random_value)
 
-    send_mail(
-    "Reset password",
-    "Your secret code is: {hased_reset_pasword_random_value}",
-    settings.EMAIL_HOST_USER,
-    [user_email],
-    fail_silently=False,
-    )
+    mail.send_email('example@sender.local',user_email,'Reset password key',f'Yor reset password key: {hased_reset_pasword_random_value}')
 
 def reset_password_mail(username,key,new_password):
-    real_user_reset_password_key = usersHandler.get_user_reset_password_key(username)
+    if(not usersHandler.is_user_exists(username)):
+        raise usersExeptions.WrongCradentialsExeption
 
+    real_user_reset_password_key = usersHandler.get_user_reset_password_key(username)
     if(not passwordHandler.is_password_valid(new_password)):
         raise passwordHandler.WeakPasswordExeption
 
     if(real_user_reset_password_key == key):
-        usersHandler.change_user_password(username,new_password)
+        user_id = usersHandler.get_user_id(username)
+        usersHandler.change_user_password(user_id,new_password)
     else:
         raise usersExeptions.WrongCradentialsExeption

@@ -58,8 +58,8 @@ def get_user_id(username):
 
 def change_user_password(user_id, new_password):
     user_salt = get_user_salt(user_id)
-    
-    hased_password = passwordHandler.hash_password(new_password,user_salt) 
+    print(user_salt)
+    hased_password = passwordHandler.hash_password(new_password,user_salt)
     passwordHandler.add_password(user_id,hased_password,user_salt)
 
 
@@ -68,7 +68,6 @@ def get_user_salt(user_id):
 
     with connection.cursor() as cursor:
         cursor.execute(sql_quer2,(user_id,))
-        print(user_id)
         return cursor.fetchone()[0]
     
 def get_user_password(user_id):

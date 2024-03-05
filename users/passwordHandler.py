@@ -8,7 +8,6 @@ from django.db import connection
 
 def add_password(user_id,password,salt):
     sql_query = "INSERT INTO users_password (user_id,password, salt)VALUES (%s,%s, %s);"
-
     with connection.cursor() as cursor:
         cursor.execute(sql_query,(user_id,password,salt,))
         row = cursor.fetchone()
