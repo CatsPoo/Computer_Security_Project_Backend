@@ -107,8 +107,6 @@ def get_user_reset_password_key(username):
     
 def set_user_reset_password_key(email,key):
     username = get_username_by_email(email)
-    print('@@@@@@')
-    print(username)
     update_one_property_of_user(username,'reset_password_key',key)
 
     

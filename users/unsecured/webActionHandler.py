@@ -85,5 +85,7 @@ def reset_password_mail(username,key,new_password):
     if(real_user_reset_password_key == key):
         user_id = usersHandler.get_user_id(username)
         usersHandler.change_user_password(user_id,new_password)
+        email = usersHandler.get_user_email(username)
+        usersHandler.set_user_reset_password_key(email,'')
     else:
         raise usersExeptions.WrongCradentialsExeption
