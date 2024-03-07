@@ -80,6 +80,8 @@ def reset_password_mail(username,key,new_password):
     real_user_reset_password_key = usersHandler.get_user_reset_password_key(username)
     if(not passwordHandler.is_password_valid(new_password)):
         raise passwordHandler.WeakPasswordExeption
+    
+    user_id = usersHandler.get_user_id(username)
     if(not passwordHandler.is_password_available(user_id,new_password)):
         raise passwordHandler.PasswordAlreadyWasInUse
     if(real_user_reset_password_key == key):
