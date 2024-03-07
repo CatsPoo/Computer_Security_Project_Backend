@@ -68,7 +68,7 @@ def send_reset_password_email(request: HttpRequest):
     if(request.method=='POST'):
         try:
             data = json.loads(request.body)
-            webActionHandler.send_reset_password_mail(data['username'],data['email'])
+            webActionHandler.send_reset_password_mail(data['email'])
             return JsonResponse({'message' :'ok'},status = 200)
         except WrongCradentialsExeption:
             return JsonResponse({'error':'Wrong Cradentials'},status = 400)

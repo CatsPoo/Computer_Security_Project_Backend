@@ -26,6 +26,7 @@ def is_user_exists(username):
         if(row): return True
     return False
 
+
 def is_email_exists(email):
     sql_query = f"select * from users_users where email= %s"
 
@@ -70,6 +71,16 @@ def get_user_salt(user_id):
         cursor.execute(sql_quer2,(user_id,))
         return cursor.fetchone()[0]
     
+
+def get_username_by_email(email):
+    sql_query = f"select username from users_users where username= %s"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query,(email,))
+        row = cursor.fetchone()
+
+        return row[0]
+
 def get_user_password(user_id):
     return passwordHandler.get_passwords(user_id)[0]
     
@@ -94,7 +105,8 @@ def get_user_email(username):
 def get_user_reset_password_key(username):
     return get_one_property_of_user(username,'reset_password_key')[0][0]
     
-def set_user_reset_password_key(username,key):
+def set_user_reset_password_key(email,key):
+    username = get_username_by_email(email)
     update_one_property_of_user(username,'reset_password_key',key)
 
     

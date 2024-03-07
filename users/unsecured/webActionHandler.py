@@ -63,21 +63,16 @@ def login(username,password):
         
         raise usersExeptions.WrongCradentialsExeption
     
-def send_reset_password_mail(username,email):
-    if(not usersHandler.is_user_exists(username)):
-        raise usersExeptions.WrongCradentialsExeption
-    
-    user_email = usersHandler.get_user_email(username)
-
-    if(user_email != email):
+def send_reset_password_mail(email):
+    if(usersHandler.is_email_exists(email)):
         raise usersExeptions.WrongCradentialsExeption
 
     rest_password_random_value = str(random.randint(1000,9999))
     hased_reset_pasword_random_value = sha1_hash(rest_password_random_value)
 
-    usersHandler.set_user_reset_password_key(username,hased_reset_pasword_random_value)
+    usersHandler.set_user_reset_password_key(email,hased_reset_pasword_random_value)
 
-    mail.send_email('example@sender.local',user_email,'Reset password key',f'Yor reset password key: {hased_reset_pasword_random_value}')
+    mail.send_email('example@sender.local',email,'Reset password key',f'Yor reset password key: {hased_reset_pasword_random_value}')
 
 def reset_password_mail(username,key,new_password):
     if(not usersHandler.is_user_exists(username)):

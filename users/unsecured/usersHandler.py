@@ -108,4 +108,17 @@ def get_user_reset_password_key(username):
 def set_user_reset_password_key(username,key):
     update_one_property_of_user(username,'reset_password_key',key)
 
-    
+
+def get_username_by_email(email):
+    sql_query = f"select username from users_users where username= %s"
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql_query,(email,))
+        row = cursor.fetchone()
+
+        return row[0]
+
+
+def set_user_reset_password_key(email,key):
+    username = get_username_by_email(email)
+    update_one_property_of_user(username,'reset_password_key',key)
