@@ -110,7 +110,7 @@ def set_user_reset_password_key(username,key):
 
 
 def get_username_by_email(email):
-    sql_query = f"select username from users_users where username= %s"
+    sql_query = f"select username from users_users where email= %s"
 
     with connection.cursor() as cursor:
         cursor.execute(sql_query,(email,))
