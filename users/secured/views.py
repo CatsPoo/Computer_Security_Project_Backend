@@ -88,7 +88,9 @@ def reset_password(request:HttpRequest):
         except WrongCradentialsExeption:
             return JsonResponse({'error':'Wrong Cradentials'},status = 400)
         except WeakPasswordExeption:
-            return JsonResponse({'error':'Week password'},status = 200)
+            return JsonResponse({'error':'Week password'},status = 400)
+        except PasswordAlreadyWasInUse:
+            return JsonResponse({'error':'The password was already in use!'},status = 400)
         except Exception as E:
             print(E)
             return JsonResponse({'error':'Internal Server Error'},status=500)
