@@ -72,7 +72,7 @@ def send_reset_password_mail(username,email):
     if(user_email != email):
         raise usersExeptions.WrongCradentialsExeption
 
-    rest_password_random_value = str(random.randint(100,9999))
+    rest_password_random_value = str(random.randint(1000,9999))
     hased_reset_pasword_random_value = sha1_hash(rest_password_random_value)
 
     usersHandler.set_user_reset_password_key(username,hased_reset_pasword_random_value)

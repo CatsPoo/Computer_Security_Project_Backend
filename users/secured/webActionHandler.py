@@ -75,7 +75,7 @@ def send_reset_password_mail(username,email):
 
     usersHandler.set_user_reset_password_key(username,hased_reset_pasword_random_value)
 
-    mail.send_email('example@sender.local',user_email,'Reset password key',f'Yor reset password key: {hased_reset_pasword_random_value}')
+    mail.send_email('example@sender.local',user_email,'Reset password key',f'Your reset password key: {hased_reset_pasword_random_value}')
 
 def reset_password_mail(username,key,new_password):
     if(not usersHandler.is_user_exists(username)):
